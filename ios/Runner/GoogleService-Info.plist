@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>139759126711-rjsqmdceggi8n611u0osvsurfo5fdjlb.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.139759126711-rjsqmdceggi8n611u0osvsurfo5fdjlb</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>139759126711-ptotgom7am4hgmmp7kspt86ih27lh431.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyC0DWnSHqbArYHgaZWlpinkeVU-0VdV0js</string>
+	<key>GCM_SENDER_ID</key>
+	<string>139759126711</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>br.com.dias.somnia</string>
+	<key>PROJECT_ID</key>
+	<string>somnia-fdias</string>
+	<key>STORAGE_BUCKET</key>
+	<string>somnia-fdias.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:139759126711:ios:2a83a1eeb7e499d600a532</string>
+	<key>DATABASE_URL</key>
+	<string>https://somnia-fdias.firebaseio.com</string>
+</dict>
+</plist>

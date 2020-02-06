@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "139759126711",
+    "firebase_url": "https://somnia-fdias.firebaseio.com",
+    "project_id": "somnia-fdias",
+    "storage_bucket": "somnia-fdias.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:139759126711:android:3e46c8cd8979873a00a532",
+        "android_client_info": {
+          "package_name": "br.com.dias.somnia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "139759126711-ptotgom7am4hgmmp7kspt86ih27lh431.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.com.dias.somnia",
+            "certificate_hash": "99cb6b6c6aef6ad0decd1e566690c3438d8a3caa"
+          }
+        },
+        {
+          "client_id": "139759126711-br34am2rg668lglo56ufqt7ph1vurehb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGNmykhwBNlS_0qkaSwYTPQ7TAK33L1ec"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "139759126711-br34am2rg668lglo56ufqt7ph1vurehb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
