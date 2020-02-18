@@ -11,6 +11,7 @@ class AppTextDefault extends StatelessWidget {
   FocusNode focus;
   FocusNode nextFocus;
   Function onSaved;
+  IconData icon;
 
   AppTextDefault(
       {@required this.name,
@@ -22,7 +23,9 @@ class AppTextDefault extends StatelessWidget {
       this.inputAction,
       this.focus,
       this.nextFocus,
-      this.onSaved});
+      this.onSaved,
+      this.icon,
+      });
 
   @override
   Widget build(BuildContext context) {
@@ -40,13 +43,31 @@ class AppTextDefault extends StatelessWidget {
           FocusScope.of(context).requestFocus(nextFocus);
         }
       },
-      decoration: InputDecoration(
+      decoration: inputDecotaration(),
+    );
+  }
+
+  InputDecoration inputDecotaration() {
+
+    if(icon != null){
+      return InputDecoration(
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10)
+            borderRadius: BorderRadius.circular(10)
         ),
         labelText: name,
         hintText: hint,
-      ),
-    );
+        prefixIcon: Icon(icon),
+      );
+    }else{
+      return InputDecoration(
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10)
+        ),
+        labelText: name,
+        hintText: hint,
+      );
+    }
+
+
   }
 }

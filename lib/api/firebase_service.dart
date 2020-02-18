@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:somnia/model/response_api.dart';
+import 'package:somnia/resources/strings.dart';
 
 String fireBaseUserUid;
 
@@ -14,6 +15,7 @@ class FirebaseService {
   Future<ResponseApi> loginWithEmailAndPassword(BuildContext context, String email, String password) async {
 
     try{
+
       AuthResult result = await _auth.signInWithEmailAndPassword(email: email, password: password);
       final FirebaseUser user = await result.user;
       print("Login realizado com sucesso!!!");
@@ -25,8 +27,30 @@ class FirebaseService {
       return ResponseApi<FirebaseUser>.ok(result: user);
 
     }catch(error){
-      print("Login with Google error: $error");
-      return ResponseApi<FirebaseUser>.error(msg: error.toString());
+
+      String msg = "Não foi possível autenticar o seu usuário.";
+
+      if(error is PlatformException){
+        PlatformException exception = error as PlatformException;
+
+        switch (exception.code) {
+          case 'ERROR_INVALID_EMAIL':
+            msg = Strings.msgErroEmailInvalid;
+            break;
+          case 'ERROR_USER_NOT_FOUND':
+            msg = Strings.msgErroUserNotFound;
+            break;
+          case 'ERROR_WRONG_PASSWORD':
+            msg = Strings.msgErroPasswordWrong;
+            break;
+          default:
+            break;
+        }
+        print("Login with Google COD: ${exception.code} MSG: ${exception.message}");
+      }else{
+        print("Login with Google error: $error");
+      }
+      return ResponseApi<FirebaseUser>.error(msg: msg);
     }
   }
 

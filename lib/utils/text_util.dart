@@ -4,6 +4,16 @@ import 'package:somnia/resources/app_colors.dart';
 
 class TextUtil {
 
+  static Text textAppbar(String value) {
+    return Text(
+      value,
+      style: TextStyle(
+        fontSize: 20,
+        color: Colors.white,
+      ),
+    );
+  }
+
   static Text textDefault(String value) {
     return Text(
       value,

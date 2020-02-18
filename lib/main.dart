@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:somnia/resources/app_colors.dart';
-import 'package:somnia/ui/login.dart';
+import 'package:somnia/ui/login_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -15,9 +15,9 @@ class MyApp extends StatelessWidget {
         primaryColor: AppColors.colorPrimary,
         accentColor: AppColors.colorAcent,
         primaryColorDark: AppColors.colorPrimaryDark,
-          canvasColor: Colors.transparent
+        canvasColor: Colors.transparent,
       ),
-      home: Login(),
+      home: LoginPage(),
     );
   }
 }

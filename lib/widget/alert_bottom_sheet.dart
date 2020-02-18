@@ -3,46 +3,63 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:somnia/resources/app_colors.dart';
 
-alertBottomSheet(
-  BuildContext context, {
-  @required String msg,
-  Function onPressOk,
-  String title = "Alerta",
-}) {
+alertBottomSheet(BuildContext context,
+    {@required String msg,
+    TipoAlert tipoAlert = TipoAlert.ALERT,
+    Function onTapDefaultButton,
+    String nameButtonDefault = "OK",
+    String title = "Alerta",
+    String subTitle,
+    List<Widget> listButtonsAddtional,
+    bool isWillPop = true}) {
+
   showModalBottomSheet(
       context: context,
       builder: (context) {
         return WillPopScope(
-          onWillPop: () async => false,
+          onWillPop: () async => isWillPop,
           child: Stack(
             children: <Widget>[
               Container(
-                margin: EdgeInsets.only(top: 40),
+                margin: EdgeInsets.only(top: 50),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     Container(
-                      height: 40,
+                      height: 50,
                       color: AppColors.colorAcent,
+                      padding: EdgeInsets.only(left: 16),
+                      child: subTitle != null
+                          ? titleWithSubtitleWidget(title, subTitle)
+                          : titleWidget(title),
                     ),
-                    Container(
-                      height: 100,
-                      color: Colors.white,
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: <Widget>[
+                        Expanded(
+                          child: Container(
+                            padding: EdgeInsets.all(16),
+                            color: Colors.white,
+                            child: Text(
+                              msg,
+                              style: TextStyle(
+                                  color: AppColors.colorPrimaryDark,
+                                  fontSize: 18),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     ButtonBarTheme(
-                      child: ButtonBar(
-                        children: <Widget>[
-                          FlatButton(
-                            child: Text('OK'),
-                            onPressed: () => Navigator.pop(context),
-                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          FlatButton(
-                            child: Text('CANCELAR'),
-                            onPressed: () => Navigator.pop(context),
-                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                        ],
+                      data: ButtonBarThemeData(
+                          buttonPadding: EdgeInsets.all(12),
+                          buttonTextTheme: ButtonTextTheme.accent),
+                      child: Container(
+                        color: Colors.white,
+                        child: ButtonBar(
+                          children: buttonsAlert(context, nameButtonDefault,
+                              onTapDefaultButton, listButtonsAddtional),
+                        ),
                       ),
                     ),
                   ],
@@ -52,13 +69,9 @@ alertBottomSheet(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
                   Container(
-                    width: 80,
-                    height: 80,
-                    child: FlareActor(
-                      "assets/animations/error.flr",
-                      shouldClip: true,
-                      animation: "Error",
-                    ),
+                    width: 100,
+                    height: 100,
+                    child: animationFlareForType(tipoAlert),
                   ),
                 ],
               )
@@ -66,6 +79,116 @@ alertBottomSheet(
           ),
         );
       });
+}
+
+List<Widget> buttonsAlert(BuildContext context, String nameDefaultButton,
+    Function onTapDefaultButton, List<Widget> listButtonsAdtional) {
+  List<Widget> listButtons = [];
+
+  listButtons.add(FlatButton(
+    child: Text(nameDefaultButton),
+    onPressed: () {
+      if (onTapDefaultButton != null) {
+        onTapDefaultButton();
+      }
+      Navigator.pop(context);
+    },
+    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+  ));
+
+  if (listButtonsAdtional != null) {
+    listButtons.addAll(listButtonsAdtional);
+  }
+
+  return listButtons;
+}
+
+titleWithSubtitleWidget(String titulo, String subTitulo) {
+  return Row(
+    children: <Widget>[
+      Column(
+        children: <Widget>[
+          Text(
+            titulo,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+            ),
+          ),
+          Text(
+            subTitulo,
+            style: TextStyle(color: Colors.white70),
+          ),
+        ],
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+      ),
+    ],
+    mainAxisSize: MainAxisSize.max,
+  );
+}
+
+titleWidget(String titulo) {
+  return Row(
+    children: <Widget>[
+      Column(
+        children: <Widget>[
+          Text(
+            titulo,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+            ),
+          ),
+        ],
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+      ),
+    ],
+    mainAxisSize: MainAxisSize.max,
+  );
+}
+
+animationFlareForType(TipoAlert tipoAlert){
+
+  switch(tipoAlert){
+    case TipoAlert.SUCESS:
+      return animationflareSucess();
+
+    case TipoAlert.ERROR:
+      return animationflareError();
+
+    default:
+    return animationflareAlert();
+  }
+
+}
+
+animationflareError() {
+  return FlareActor(
+    "assets/animations/error.flr",
+    shouldClip: true,
+    animation: "Error",
+  );
+}
+
+animationflareSucess() {
+  return FlareActor(
+    "assets/animations/success_check.flr",
+    shouldClip: true,
+    animation: "show",
+  );
+}
+
+animationflareAlert() {
+  return Container(
+    padding: EdgeInsets.all(20),
+    child: FlareActor(
+      "assets/animations/bell.flr",
+      shouldClip: true,
+      animation: "Notification Loop",
+    ),
+  );
 }
 
 Container bodyAredondado(BuildContext context) {
@@ -100,11 +223,7 @@ Container body(BuildContext context) {
               width: 50,
               height: 50,
               color: AppColors.colorPrimaryDark,
-              child: FlareActor(
-                "assets/animations/error.flr",
-                shouldClip: true,
-                animation: "Error",
-              ),
+              child: animationflareError(),
             ),
             Expanded(
               child: Container(
@@ -149,3 +268,5 @@ Container body(BuildContext context) {
     ),
   );
 }
+
+enum TipoAlert { SUCESS, ALERT, ERROR }

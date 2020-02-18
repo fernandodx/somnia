@@ -30,6 +30,7 @@ dependencies:
   flutter_auth_buttons: ^0.6.0
   bloc_pattern: ^2.5.1
   flare_flutter: ^2.0.1 # animações
+  loading: ^1.0.2
 
   #Exigem configuração no Android ou IOS
   image_picker: ^0.6.3+1
