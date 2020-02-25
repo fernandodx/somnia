@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:somnia/bloc/register_bloc.dart';
 import 'package:somnia/resources/app_colors.dart';
@@ -16,6 +17,28 @@ class _RegisterPageState extends State<RegisterPage> {
   final _bloc = RegisterBloc();
 
   @override
+  void initState() {
+    super.initState();
+
+    try{
+      DocumentReference refUsers =
+      Firestore.instance.collection("dataHour").document("user1");
+      refUsers.setData(
+          {"name": "Fernando", "e-mail": "Dias teset"}, merge: true)
+          .whenComplete(() {
+        print("FIRE STORE FINISH");
+      })
+          .catchError((error) {
+        print("ERRO AO SALVAR O USUARIO : $error");
+      });
+    }catch(error){
+      print("ERRO TRY - $error");
+    }
+
+    _bloc.fetch();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -26,65 +49,75 @@ class _RegisterPageState extends State<RegisterPage> {
               icon: Icon(
                 Icons.check,
               ),
-              onPressed: () => print("save")),
+              onPressed: () => _bloc.resgisterUser(context)),
         ],
       ),
-      body: Column(
+      body: Stack(
         children: <Widget>[
-          headerRegister(),
-          Expanded(
-            child: Form(
-              key: _bloc.formKey,
-              child: Container(
-                padding: EdgeInsets.all(16),
-                color: Colors.white,
-                child: ListView(
-                  children: <Widget>[
-                    AppTextDefault(
-                      name: "Nome",
-                      inputAction: TextInputAction.next,
-                      inputType: TextInputType.text,
-                      onSaved: (name) => _bloc.user.name = name,
-                      validator: ValidatorUtil.requiredField,
+          Column(
+            children: <Widget>[
+              headerRegister(),
+              Expanded(
+                child: Form(
+                  key: _bloc.formKey,
+                  child: Container(
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                        gradient: AppColors.backgroundPageGradient()),
+                    child: ListView(
+                      children: <Widget>[
+                        AppTextDefault(
+                          name: "Nome",
+                          inputAction: TextInputAction.next,
+                          inputType: TextInputType.text,
+                          onSaved: (name) => _bloc.user.name = name,
+                          validator: ValidatorUtil.requiredField,
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        AppTextDefault(
+                          name: "E-mal",
+                          inputAction: TextInputAction.next,
+                          inputType: TextInputType.emailAddress,
+                          onSaved: (email) => _bloc.user.email = email,
+                          validator: ValidatorUtil.validatorEmail,
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        AppTextDefault(
+                          name: "Confirme o e-mail",
+                          inputAction: TextInputAction.next,
+                          inputType: TextInputType.emailAddress,
+                          controller: _bloc.validatedEmailController,
+                          validator: ValidatorUtil.requiredField,
+                          onSaved: (emailConfirmated) =>
+                              ValidatorUtil.fieldsEquals(emailConfirmated,
+                                  _bloc.validatedEmailController),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        AppTextDefault(
+                          name: "Senha",
+                          inputAction: TextInputAction.next,
+                          inputType: TextInputType.visiblePassword,
+                          isPassword: true,
+                          onSaved: (password) => _bloc.user.password = password,
+                          validator: ValidatorUtil.validatorPassword,
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                      ],
                     ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    AppTextDefault(
-                      name: "E-mal",
-                      inputAction: TextInputAction.next,
-                      inputType: TextInputType.emailAddress,
-                      onSaved: (email) => _bloc.user.email = email,
-                      validator: ValidatorUtil.validatorEmail,
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    AppTextDefault(
-                      name: "Senha",
-                      inputAction: TextInputAction.next,
-                      inputType: TextInputType.visiblePassword,
-                      isPassword: true,
-                      onSaved: (password) => _bloc.user.password = password,
-                      validator: (value) =>
-                          ValidatorUtil.validatorPasswordWithRepit(
-                              value, _bloc.validedPasswordController),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    AppTextDefault(
-                      name: "Repita a senha",
-                      inputAction: TextInputAction.next,
-                      inputType: TextInputType.visiblePassword,
-                      isPassword: true,
-                      controller: _bloc.validedPasswordController,
-                    )
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          )
+              )
+            ],
+          ),
+          _bloc.loading(),
         ],
       ),
     );
@@ -112,17 +145,35 @@ class _RegisterPageState extends State<RegisterPage> {
             children: <Widget>[
               Container(
                 margin: EdgeInsets.only(top: 60),
-                width: 150,
-                height: 150,
-                child: CircleAvatar(
-                  backgroundImage: NetworkImage(
-                      "https://cactusthemes.com/blog/wp-content/uploads/2018/01/tt_avatar_small.jpg"),
+                decoration: BoxDecoration(
+                  color: Colors.white, // border color
+                  shape: BoxShape.circle,
                 ),
+                width: 130,
+                height: 130,
+                child: createStreamBuilderPhotoUser(),
               ),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  StreamBuilder<Widget> createStreamBuilderPhotoUser() {
+    return StreamBuilder<Widget>(
+      stream: _bloc.pictureStream,
+      builder: (context, snapshot) {
+
+        if (snapshot.hasData) {
+          return InkWell(
+            child: snapshot.data,
+            onTap: () => _bloc.onAddImage(),
+          );
+        }
+
+        return Center(child: CircularProgressIndicator());
+      },
     );
   }
 }

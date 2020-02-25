@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
 import 'package:somnia/bloc/login_bloc.dart';
@@ -92,7 +93,7 @@ class _LoginPageState extends State<LoginPage> {
         icon: Icons.lock,
         isPassword: true,
         inputType: TextInputType.text,
-        onSaved: (value) => _bloc.user.senha = value,
+        onSaved: (value) => _bloc.user.password = value,
         name: "Senha",
       ),
       SizedBox(height: 16),
@@ -172,11 +173,16 @@ class _LoginPageState extends State<LoginPage> {
     ];
   }
 
-  Container containerLogo() {
-    return Container(
-      width: 100,
-      height: 100,
-      child: Image.asset("assets/images/logoSomnia.png"),
+  containerLogo() {
+    return Column(
+      children: <Widget>[
+        Container(
+          width: 100,
+          height: 100,
+          child: Image.asset("assets/images/logoSomnia.png"),
+        ),
+        TextUtil.textTitulo("Dremfo", color: Colors.white)
+      ],
     );
   }
 

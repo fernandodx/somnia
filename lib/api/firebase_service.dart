@@ -1,36 +1,37 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:somnia/api/firebase_storage_service.dart';
 import 'package:somnia/model/response_api.dart';
 import 'package:somnia/resources/strings.dart';
 
 String fireBaseUserUid;
 
 class FirebaseService {
-
   final _googleSign = GoogleSignIn();
   final _auth = FirebaseAuth.instance;
 
-  Future<ResponseApi> loginWithEmailAndPassword(BuildContext context, String email, String password) async {
-
-    try{
-
-      AuthResult result = await _auth.signInWithEmailAndPassword(email: email, password: password);
+  Future<ResponseApi> loginWithEmailAndPassword(
+      BuildContext context, String email, String password) async {
+    try {
+      AuthResult result = await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
       final FirebaseUser user = await result.user;
       print("Login realizado com sucesso!!!");
       print("Nome: ${user.displayName}");
       print("E-mail: ${user.email}");
       print("Foto: ${user.photoUrl}");
-//      saveUser(context, user);
+      saveUser(context, user);
 
       return ResponseApi<FirebaseUser>.ok(result: user);
-
-    }catch(error){
-
+    } catch (error) {
       String msg = "Não foi possível autenticar o seu usuário.";
 
-      if(error is PlatformException){
+      if (error is PlatformException) {
         PlatformException exception = error as PlatformException;
 
         switch (exception.code) {
@@ -46,8 +47,9 @@ class FirebaseService {
           default:
             break;
         }
-        print("Login with Google COD: ${exception.code} MSG: ${exception.message}");
-      }else{
+        print(
+            "Login with Google COD: ${exception.code} MSG: ${exception.message}");
+      } else {
         print("Login with Google error: $error");
       }
       return ResponseApi<FirebaseUser>.error(msg: msg);
@@ -55,49 +57,53 @@ class FirebaseService {
   }
 
   Future<ResponseApi> updateUser(BuildContext context, {name, urlPhoto}) async {
-
-    try{
-
+    try {
       final updateUser = UserUpdateInfo();
-      if(urlPhoto != null){
+      if (urlPhoto != null) {
         updateUser.photoUrl = urlPhoto;
       }
       updateUser.displayName = name ?? "";
 
       var user = await FirebaseAuth.instance.currentUser();
       user.updateProfile(updateUser);
-//      saveUser(context, user);
+      saveUser(context, user);
 
       return ResponseApi<FirebaseUser>.ok(result: user);
-
-    }catch(error){
+    } catch (error) {
       print("Erro ao criar o usuário: ${error}");
       return ResponseApi<FirebaseUser>.error(msg: error.toString());
     }
-
   }
 
+  Future<ResponseApi> createUserWithEmailAndPassword(
+      BuildContext context, String email, String password,
+      {String name, File photo}) async {
+    try {
+      AuthResult result = await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
 
-  Future<ResponseApi> createUserWithEmailAndPassword(BuildContext context, String email, String password, {String name, String urlPhoto}) async {
-
-    try{
-      AuthResult result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
       final FirebaseUser user = await result.user;
 
-//      saveUser(context, user);
+      await saveUser(context, user);
 
-      if(name != null || urlPhoto != null){
+      var urlPhotoUser = null;
+      if (photo != null) {
+        urlPhotoUser = await FirebaseStorageService()
+            .uploadFileUserOn(photo, id: "user_photo");
+      }
+
+      if (name != null || urlPhotoUser != null) {
         final updateUser = UserUpdateInfo();
-        updateUser.photoUrl = urlPhoto ?? "https://image.flaticon.com/icons/svg/147/147144.svg";
+        updateUser.photoUrl = urlPhotoUser;
         updateUser.displayName = name ?? "";
-        user.updateProfile(updateUser);
+        await user.updateProfile(updateUser);
       }
 
       return ResponseApi<FirebaseUser>.ok(result: user);
-
-    }catch(error){
-      if(error is PlatformException) {
-        print("Erro ao criar o usuário: cod - ${error.code} mensagem - ${error.message}");
+    } catch (error) {
+      if (error is PlatformException) {
+        print(
+            "Erro ao criar o usuário: cod - ${error.code} mensagem - ${error.message}");
         return ResponseApi<FirebaseUser>.error(msg: error.toString());
       }
       print("Erro ao criar o usuário: ${error}");
@@ -106,11 +112,10 @@ class FirebaseService {
   }
 
   Future<ResponseApi> loginWithGoogle(BuildContext context) async {
-
-    try{
-
+    try {
       final GoogleSignInAccount account = await _googleSign.signIn();
-      final GoogleSignInAuthentication authentication = await account.authentication;
+      final GoogleSignInAuthentication authentication =
+          await account.authentication;
 
       print("Google User: ${account.email}");
 
@@ -120,36 +125,35 @@ class FirebaseService {
 
       AuthResult result = await _auth.signInWithCredential(credential);
       final FirebaseUser user = await result.user;
-//      saveUser(context, user);
+      saveUser(context, user);
       print("Login realizado com sucesso!!!");
       print("Nome: ${user.displayName}");
       print("E-mail: ${user.email}");
       print("Foto: ${user.photoUrl}");
 
       return ResponseApi<FirebaseUser>.ok(result: user);
-
-    }catch(error){
+    } catch (error) {
       print("Login with Google error: $error");
       return ResponseApi.error(msg: error.toString());
     }
-
   }
 
-//  void saveUser(BuildContext context, FirebaseUser user){
-//    if(user != null){
-//      fireBaseUserUid = user.uid;
-//      DocumentReference refUsers = Firestore.instance.collection("users").document(fireBaseUserUid);
-//      refUsers.setData({"name" : user.displayName, "e-mail" : user.email });
+  void saveUser(BuildContext context, FirebaseUser user) {
+    if (user != null) {
+      fireBaseUserUid = user.uid;
+      DocumentReference refUsers =
+          Firestore.instance.collection("users").document(fireBaseUserUid);
+      refUsers.setData(
+          {"name": user.displayName, "e-mail": user.email})
+          .catchError((error) {
+            print("ERRO AO SALVAR O USUARIO : $error");
+          });
 //      MainEventBus().get(context).updateUser(user);
-//    }
-//  }
+    }
+  }
 
   logout() {
     _auth.signOut();
     _googleSign.signOut();
   }
-
-
-
-
 }

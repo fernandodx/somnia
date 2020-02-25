@@ -20,12 +20,12 @@ class LoginBloc extends BaseBloc {
 
     showLoading();
 
-    print("USER : ${user.email} SENHA: ${user.senha}");
+    print("USER : ${user.email} SENHA: ${user.password}");
 
     formKey.currentState.save();
 
     ResponseApi responseApi = await FirebaseService()
-        .loginWithEmailAndPassword(context, user.email, user.senha);
+        .loginWithEmailAndPassword(context, user.email, user.password);
 
     hideLoading();
 

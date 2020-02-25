@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:somnia/resources/app_colors.dart';
 
 class TextUtil {
-
   static Text textAppbar(String value) {
     return Text(
       value,
@@ -24,13 +23,10 @@ class TextUtil {
     );
   }
 
-  static Text textTitulo(String value) {
+  static Text textTitulo(String value, {color = AppColors.colorPrimaryDark}) {
     return Text(
       value,
-      style: TextStyle(
-          fontSize: 20,
-          color: AppColors.colorPrimaryDark,
-          fontWeight: FontWeight.bold),
+      style: TextStyle(fontSize: 20, color: color, fontWeight: FontWeight.bold),
     );
   }
 }

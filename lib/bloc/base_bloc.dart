@@ -8,7 +8,7 @@ import 'package:somnia/resources/app_colors.dart';
 
 class BaseBloc {
 
-  final _loadingStreamController = StreamController<bool>();
+  final _loadingStreamController = StreamController<bool>.broadcast();
 
 
   showLoading(){
